@@ -38,7 +38,7 @@ class Model {
 
     return list;
   }
-
+  //get episode
   static async getEpisode(animeId, episodeIndex) {
     const episodes = await this.getEpisodes(animeId);
 
@@ -48,7 +48,7 @@ class Model {
 
     return { ...episode, ...sources };
   }
-
+  //search anime
   static async search(keyword, limit = LIMIT) {
     const URL = `/search?q=${encodeURIComponent(keyword)}&limit=${limit}`;
     const { data } = await instance.get(URL);
@@ -74,7 +74,7 @@ class Model {
 
     return episodes;
   }
-
+  // get video source by fake API 
   static async getSource(animeId, episodeId) {
     const { data } = await instance.get(
       `/films/${animeId}/episodes/${episodeId}`
@@ -124,6 +124,7 @@ class Model {
     };
   }
 
+  //get anime's comment
   static async getComments(animeId, offset, limit = LIMIT) {
     const { data } = await instance.get(
       `/films/${animeId}/comments?limit=${limit}&offset=${offset}`
@@ -131,13 +132,13 @@ class Model {
 
     return data.data;
   }
-
+  // get ranked anime
   static async getRanking(slug) {
     const { data } = await axios.get(`${WEBSITE_URL}/bang-xep-hang/${slug}`);
 
     return parseList(data);
   }
-
+  //get anime's information
   static async getInfo(slug) {
     const scrapedInfo = await scrapeInfo(slug);
 
@@ -145,19 +146,20 @@ class Model {
 
     return { ...scrapedInfo, episodes };
   }
-
+  //get recommend anime
   static async recommended() {
     const { data } = await axios.get(`${WEBSITE_URL}/hom-nay-xem-gi`);
 
     return parseList(data);
   }
-
+  //get recently anime
   static async recentlyUpdated() {
     const { data } = await axios.get(`${WEBSITE_URL}/tap-moi-nhat`);
 
     return parseList(data);
   }
 
+  //get name, url and slug of an anime
   static async scrapeInfo(slug) {
     const { data } = await axios.get(`${WEBSITE_URL}/${slug}`);
 
@@ -182,7 +184,7 @@ class Model {
 
     return { genres, subTeams, description };
   }
-
+    //fake API to get animes through genre
   static async getGenre(genre, page = 1) {
     const URL = `${WEBSITE_URL}/anime/${genre}/trang-${page}`;
 
@@ -207,42 +209,7 @@ const urlToSlug = url => {
   return parts[parts.length - 1];
 };
 
-const getInfo = async slug => {
-  const { data } = await instance.get("/search", {
-    params: {
-      q: slug,
-      limit: 1
-    }
-  });
-
-  const { meta, time, ...info } = data.data[0];
-
-  const animeTime = !info.is_movie ? `${meta.max_episode_name}/${time}` : time;
-
-  return { ...info, time: animeTime };
-};
-
-const addInfo = async list => {
-  const promises = await Promise.allSettled(
-    list.map(async anime => {
-      const info = await getInfo(anime.slug);
-
-      let returnObj = { ...anime, ...info };
-
-      if (!anime.description) {
-        const scrapedInfo = await scrapeInfo(anime.slug);
-        returnObj = { ...returnObj, ...scrapedInfo };
-      }
-
-      return returnObj;
-    })
-  );
-
-  return promises
-    .filter(promise => promise.status === "fulfilled")
-    .map(promise => promise.value);
-};
-
+//get all information off an anime through slug and page source
 const scrapeInfo = async slug => {
   const { data } = await axios.get(`${WEBSITE_URL}/${slug}`);
 
@@ -287,12 +254,14 @@ const scrapeInfo = async slug => {
   };
 };
 
+//get views of an anime
 const parseViews = text => {
   if (!text) return;
 
   return Number(text.replace("lượt xem", "").replace(/,/g, ""));
 };
 
+//get slug, views, name, time, latestEpisode, thumbnail from page source
 const parseList = html => {
   const { window } = new JSDOM(html);
   const { document } = window;
