@@ -14,6 +14,7 @@ let proxy = corsAnywhere.createServer({
 });
 
 class Controller {
+  //get recently anime
   static async getRecentlyUpdated(_req, res, next) {
     try {
       const recentlyUpdatedList = await Model.recentlyUpdated();
@@ -23,7 +24,7 @@ class Controller {
       next(err);
     }
   }
-
+  //get anime's information
   static async getInfo(req, res, next) {
     const { slug } = req.params;
 
@@ -35,7 +36,7 @@ class Controller {
       next(err);
     }
   }
-
+  //get random episode
   static async getEpisode(req, res, next) {
     const { animeId, episodeIndex } = req.params;
 
@@ -47,7 +48,7 @@ class Controller {
       next(err);
     }
   }
-
+  //get all episodes
   static async getEpisodes(req, res, next) {
     const { animeId } = req.params;
 
@@ -59,7 +60,7 @@ class Controller {
       next(err);
     }
   }
-
+  //get comment of
   static async getComments(req, res, next) {
     const { animeId, limit } = req.params;
     const { page } = req.query;
@@ -74,7 +75,7 @@ class Controller {
       next(err);
     }
   }
-
+  //get anime through genre
   static async getGenre(req, res, next) {
     const { slug } = req.params;
     const { page = 1, limit } = req.query;
@@ -91,7 +92,7 @@ class Controller {
       next(err);
     }
   }
-
+  //search anime
   static async search(req, res, next) {
     const { q, limit, page = 1 } = req.query;
 
@@ -107,7 +108,7 @@ class Controller {
       next(err);
     }
   }
-
+  //get thumbnail, slug, views, name of an anime
   static async getSlide(_req, res, next) {
     try {
       const slideList = await Model.slide();
@@ -117,7 +118,7 @@ class Controller {
       next(err);
     }
   }
-
+  //get recommend anime
   static async getRecommended(_req, res, next) {
     try {
       const recommendedList = await Model.recommended();
@@ -127,7 +128,7 @@ class Controller {
       next(err);
     }
   }
-
+  //get ranking anime
   static async getRanking(req, res, next) {
     const { slug } = req.params;
 
@@ -139,7 +140,7 @@ class Controller {
       next(err);
     }
   }
-
+//fix cors for all url
   static async corsAnywhere(req, res) {
     req.url = req.url.replace("/cors/", "/");
     proxy.emit("request", req, res);
