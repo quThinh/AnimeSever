@@ -11,7 +11,7 @@ const cache = (duration = DEFAULT_DURATION) => {
 
     res.sendResponse = res.send;
     res.send = (body) => {
-      mcache.put(key, body, duration * 1000);
+      mcache.put(key, body, duration * 2000);
       res.sendResponse(body);
     };
 
